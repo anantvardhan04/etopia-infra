@@ -10,7 +10,6 @@ resource "aws_vpc" "etopia_vpc" {
 }
 
 resource "aws_internet_gateway" "etopia_igw" {
-  name = format("etopia-%s-igw",var.environment)
   vpc_id = aws_vpc.etopia_vpc.id
 
   tags = {
@@ -22,7 +21,6 @@ resource "aws_internet_gateway" "etopia_igw" {
 }
 
 resource "aws_subnet" "etopia_public_subnet_1" {
-  name   = format("etopia-%s-pub-subnet-1",var.environment)
   vpc_id     = aws_vpc.etopia_vpc.id
   cidr_block = "10.0.1.0/24"
   map_public_ip_on_launch = true
@@ -37,7 +35,6 @@ resource "aws_subnet" "etopia_public_subnet_1" {
 }
 
 resource "aws_subnet" "etopia_public_subnet_2" {
-  name = format("etopia-%s-pub-subnet-2",var.environment)
   vpc_id     = aws_vpc.etopia_vpc.id
   cidr_block = "10.0.2.0/24"
   map_public_ip_on_launch = true
@@ -69,7 +66,6 @@ resource "aws_nat_gateway" "etopia_nat_gw" {
 }
 
 resource "aws_subnet" "etopia_private_subnet_1" {
-  name = format("etopia-%s-pvt-subnet-1",var.environment)
   vpc_id     = aws_vpc.etopia_vpc.id
   cidr_block = "10.0.3.0/24"
   availability_zone = "us-east-1a"
@@ -80,11 +76,10 @@ resource "aws_subnet" "etopia_private_subnet_1" {
     CostCenter = var.tags["cost_center"]
     Environment = var.environment
   }
-  depends_on = [aws_nat_gateway.nat_gw]
+  depends_on = [aws_nat_gateway.etopia_nat_gw]
 }
 
 resource "aws_subnet" "etopia_private_subnet_2" {
-  name = format("etopia-%s-pvt-subnet-2",var.environment)
   vpc_id     = aws_vpc.etopia_vpc.id
   cidr_block = "10.0.4.0/24"
   availability_zone = "us-east-1b"
@@ -95,5 +90,5 @@ resource "aws_subnet" "etopia_private_subnet_2" {
     CostCenter = var.tags["cost_center"]
     Environment = var.environment
   }
-  depends_on = [aws_nat_gateway.nat_gw]
+  depends_on = [aws_nat_gateway.etopia_nat_gw]
 }

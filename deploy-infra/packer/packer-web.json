@@ -1,0 +1,61 @@
+{
+    "variables": {
+      "aws_region": "us-east-1",
+      "packer-sg": "{{user `packer-sg`}}",
+      "vpc-id": "{{user `vpc-id`}}",
+      "subnet-id": "{{user `subnet-id`}}",
+      "environment": "{{user `environment`}}",
+      "time": "{{timestamp}}"
+    },
+    "builders": [
+      {
+        "type": "amazon-ebs",
+        "security_group_id": "{{user `packer-sg`}}",
+        "region": "{{user `aws_region`}}",
+        "vpc_id": "{{user `vpc-id`}}",
+        "associate_public_ip_address": false,
+        "subnet_id": "{{user `subnet-id`}}",
+        "source_ami": "ami-063d4ab14480ac177",
+        "instance_type": "t3.micro",
+        "ssh_username": "ec2-user",
+        "ami_name": "etopia-{{user `environment`}}-app-{{user `time`}}",
+        "launch_block_device_mappings": [{
+          "delete_on_termination": true,
+          "device_name": "/dev/xvda",
+          "volume_type": "gp2",
+          "volume_size": 10
+        }],    
+        "tags": {
+          "Name": "etopia-{{user `environment`}}-app-{{user `time`}}",
+          "OS_Version": "Amazon Linux",
+          "Release": "Latest",
+          "Base_AMI_Name": "{{ .SourceAMIName }}"
+        },
+        "run_tags": {
+          "Name": "etopia-{{user `environment`}}-app-{{user `time`}}",
+          "Application": "Etopia App",
+          "ResourceGroup": "Admin"
+        },
+        "run_volume_tags": {
+          "Name": "etopia-{{user `environment`}}-app-{{user `time`}}",
+          "Application": "Etopia App",
+          "ResourceGroup": "Admin"
+        }
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "file",
+        "source": "host-files",
+        "destination": "/tmp"
+      },
+      {
+        "type": "shell",
+        "inline": [
+          "cd /tmp/host-files/; ./bootstrap.sh",
+          "sudo rm -rf /tmp/host-files"
+        ]
+      }
+    ]
+  }
+  

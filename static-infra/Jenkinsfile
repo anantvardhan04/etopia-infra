@@ -1,0 +1,112 @@
+def ENVIRONMENTS = [
+    'DEV': [env: 'dev'],
+    'QA': [env: 'qa'],
+    'UAT': [env: 'uat'],
+    'PRODUCTION': [env: 'prod']
+]
+
+
+pipeline {
+    agent none
+    options {
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        timestamps()
+    }
+    environment{
+        TERRAFORM_VERSION="0.12.31"
+        PLAN_STATUS=""
+        AWS_ENVIRONMENT=""
+    }
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: ['DEV','QA','UAT','PRODUCTION']], description: 'The environment.')
+        password(name: 'AWS_CREDENTIALS', defaultValue: '', description: 'Enter AWS credentials. e.g. export AWS_ACCESS_KEY_ID=[...] export AWS_SECRET_ACCESS_KEY=[...] export AWS_SESSION_TOKEN=[...]')
+    }
+    stages{
+        stage('Validate inputs and user') {
+            agent { label 'master' }
+            steps{
+                script{
+                    if (params.AWS_CREDENTIALS == null || params.AWS_CREDENTIALS.toString().trim() == ""){
+                        error("AWS credentials not present. Pls insert the values in this way: export AWS_ACCESS_KEY_ID=[...] export AWS_SECRET_ACCESS_KEY=[...] export AWS_SESSION_TOKEN=[...]")
+                    }
+                    AWS_ENVIRONMENT=ENVIRONMENTS["${ENVIRONMENT}"]['env']
+                    env.AWS_ACCESS_KEY_ID=get_aws_credentials_from_input.getCredential("AWS_ACCESS_KEY_ID")
+                    env.AWS_SECRET_ACCESS_KEY=get_aws_credentials_from_input.getCredential("AWS_SECRET_ACCESS_KEY")
+                    env.AWS_SESSION_TOKEN=get_aws_credentials_from_input.getCredential("AWS_SESSION_TOKEN")
+                    def user_id = sh label: '', returnStdout: true, script: 'aws sts get-caller-identity | jq .\'UserId\' -r | awk \'{split($0,a,":"); print a[2]}\''
+                    wrap([$class: 'BuildUser']) {
+                        currentBuild.displayName = "${BUILD_NUMBER} - User: ${BUILD_USER}, Environment: ${ENVIRONMENT}"
+                        currentBuild.description = "AWS user: ${user_id}"
+                    }
+                }
+            }
+        }
+        stage('Environment confirmation approval') {
+            agent { label 'master' }
+            when {
+                expression{ ENVIRONMENT.startsWith("PRODUCTION") }
+            }
+            steps{
+                script{
+                    input(id: 'confirm_env', message: "You are deploying on PRODUCTION. Are you sure?")
+                }
+            }
+        }
+        stage('Create Terraform plan') {
+            agent {
+                docker {
+                    image "hashicorp/terraform:${TERRAFORM_VERSION}"
+                    args '--entrypoint=""'
+                }
+            }
+            steps{
+                script{
+                    dir('terraform'){
+                            sh label: 'configure_terraform', script: "terraform init -backend-config=\"../config/etopia-${AWS_ENVIRONMENT}-init.tfvars\" --reconfigure --upgrade"
+                            sh label: 'run_terraform_plan', script: "terraform plan -var-file=\"../config/${AWS_ENVIRONMENT}.tfvars\" -no-color -out tfplan | tee tfplan_state"
+                            PLAN_STATUS = sh label: 'plan_status', returnStdout: true, script: 'cat tfplan_state | grep "Plan:\\|No changes"'
+                            echo "Plan status: ${PLAN_STATUS}"
+                            sh "terraform show -json tfplan >  tfplan.json"
+                    }
+                }
+            }
+        }
+        stage('Approval') {
+            agent { label 'master' }
+            when {
+                expression{ ! PLAN_STATUS.startsWith("No changes") }
+            }
+            steps{
+                script {
+                    input(id: 'confirm', message: "Apply Terraform? ${PLAN_STATUS}")
+                }
+            }
+        }
+        stage('Apply Terraform plan') {
+            agent {
+                docker {
+                    image "hashicorp/terraform:${TERRAFORM_VERSION}"
+                    args '--entrypoint=""'
+                }
+            }
+            when {
+                expression{ ! PLAN_STATUS.startsWith("No changes") }
+            }
+            steps{
+                script{
+                    dir('terraform'){
+                        sh label: 'run_terraform_plan', script: "terraform apply -no-color -input=false tfplan"
+                    }
+                }
+            }
+        }
+      }
+    post {
+        cleanup {
+            node('master') {
+                sh 'rm -rf * .git/'
+            }
+        }
+    }
+}

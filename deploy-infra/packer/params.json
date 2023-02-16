@@ -1,0 +1,6 @@
+{
+    "packer-sg": "sg-096ee5b3d5b56187c",
+    "vpc-id": "vpc-045d7f140caa2ea88",
+    "subnet-id": "subnet-063d02969858b6ee3",
+    "environment": "dev"
+  }

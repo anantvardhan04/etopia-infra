@@ -56,6 +56,8 @@ pipeline {
             steps{
                 script{
                     dir('static-infra/terraform'){
+                            sh "echo ${AWS_ACCESS_KEY_ID}"
+                            sh "echo ${AWS_SECRET_ACCESS_KEY}"
                             sh label: 'configure_terraform', script: "terraform init -backend-config=\"../config/etopia-${AWS_ENVIRONMENT}-init.tfvars\" --reconfigure --upgrade"
                             sh label: 'run_terraform_plan', script: "terraform plan -var-file=\"../config/${AWS_ENVIRONMENT}.tfvars\" -no-color -out tfplan | tee tfplan_state"
                             PLAN_STATUS = sh label: 'plan_status', returnStdout: true, script: 'cat tfplan_state | grep "Plan:\\|No changes"'

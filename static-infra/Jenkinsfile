@@ -91,7 +91,7 @@ pipeline {
             steps{
                 script{
                     dir('terraform'){
-                        sh label: 'run_terraform_apply', script: "terraform apply -no-color -input=false ${WORKSPACE}/etopia-infra-deploy/static-infra/terraform/tfplan"
+                        sh label: 'run_terraform_apply', script: "terraform apply -no-color -input=false ${WORKSPACE}/static-infra/terraform/tfplan"
                     }
                 }
             }

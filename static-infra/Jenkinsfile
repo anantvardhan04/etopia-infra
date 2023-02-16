@@ -26,14 +26,12 @@ pipeline {
             agent { label 'master' }
             steps{
                 script{
-                    if (params.AWS_CREDENTIALS == null || params.AWS_CREDENTIALS.toString().trim() == ""){
-                        error("AWS credentials not present. Pls insert the values in this way: export AWS_ACCESS_KEY_ID=[...] export AWS_SECRET_ACCESS_KEY=[...] export AWS_SESSION_TOKEN=[...]")
-                    }
                     AWS_ENVIRONMENT=ENVIRONMENTS["${ENVIRONMENT}"]['env']
                     withCredentials([usernamePassword(credentialsId: 'etopia-aws-dev', passwordVariable: 'AWS_ACCESS_KEY_ID', usernameVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                                            env.AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+                                            env.AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+
                      }
-                    env.AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
-                    env.AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
                 }
             }
         }

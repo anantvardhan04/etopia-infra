@@ -19,7 +19,7 @@ pipeline {
         AWS_ENVIRONMENT=""
     }
     parameters {
-        choice(name: 'ENVIRONMENT', choices: ['DEV','QA','UAT','PRODUCTION']], description: 'The environment.')
+        choice(name: 'ENVIRONMENT', choices: ['DEV','QA','UAT','PRODUCTION'], description: 'The environment.')
         password(name: 'AWS_CREDENTIALS', defaultValue: '', description: 'Enter AWS credentials. e.g. export AWS_ACCESS_KEY_ID=[...] export AWS_SECRET_ACCESS_KEY=[...] export AWS_SESSION_TOKEN=[...]')
     }
     stages{

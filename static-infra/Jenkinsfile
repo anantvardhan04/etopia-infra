@@ -89,7 +89,7 @@ pipeline {
             steps{
                 script{
                     dir('terraform'){
-                        sh label: 'run_terraform_plan', script: "terraform apply -no-color -input=false tfplan"
+                        sh label: 'run_terraform_plan', script: "terraform apply -no-color -input=false static-infra/terraform/tfplan"
                     }
                 }
             }

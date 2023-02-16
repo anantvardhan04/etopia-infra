@@ -20,7 +20,6 @@ pipeline {
     }
     parameters {
         choice(name: 'ENVIRONMENT', choices: ['DEV','QA','UAT','PRODUCTION'], description: 'The environment.')
-        password(name: 'AWS_CREDENTIALS', defaultValue: '', description: 'Enter AWS credentials. e.g. export AWS_ACCESS_KEY_ID=[...] export AWS_SECRET_ACCESS_KEY=[...] export AWS_SESSION_TOKEN=[...]')
     }
     stages{
         stage('Validate inputs and user') {
@@ -31,14 +30,10 @@ pipeline {
                         error("AWS credentials not present. Pls insert the values in this way: export AWS_ACCESS_KEY_ID=[...] export AWS_SECRET_ACCESS_KEY=[...] export AWS_SESSION_TOKEN=[...]")
                     }
                     AWS_ENVIRONMENT=ENVIRONMENTS["${ENVIRONMENT}"]['env']
-                    env.AWS_ACCESS_KEY_ID=get_aws_credentials_from_input.getCredential("AWS_ACCESS_KEY_ID")
-                    env.AWS_SECRET_ACCESS_KEY=get_aws_credentials_from_input.getCredential("AWS_SECRET_ACCESS_KEY")
-                    env.AWS_SESSION_TOKEN=get_aws_credentials_from_input.getCredential("AWS_SESSION_TOKEN")
-                    def user_id = sh label: '', returnStdout: true, script: 'aws sts get-caller-identity | jq .\'UserId\' -r | awk \'{split($0,a,":"); print a[2]}\''
-                    wrap([$class: 'BuildUser']) {
-                        currentBuild.displayName = "${BUILD_NUMBER} - User: ${BUILD_USER}, Environment: ${ENVIRONMENT}"
-                        currentBuild.description = "AWS user: ${user_id}"
-                    }
+                    withCredentials([usernamePassword(credentialsId: 'etopia-aws-dev', passwordVariable: 'AWS_ACCESS_KEY_ID', usernameVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                     }
+                    env.AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+                    env.AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
                 }
             }
         }

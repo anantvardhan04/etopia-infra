@@ -9,6 +9,6 @@ db_password="password123"
 
 # Tag Manager
 tags = {
-    Owner = "Anant Vardhan"
-    CostCenter = "Etopia-Fonetwish"
+    owner = "Anant Vardhan"
+    cost_center = "Etopia-Fonetwish"
 }

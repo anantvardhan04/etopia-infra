@@ -1,5 +1,4 @@
 resource "aws_vpc" "etopia_vpc" {
-  name = format("etopia-%s-vpc",var.environment)
   cidr_block = "10.0.0.0/16"
 
   tags = {

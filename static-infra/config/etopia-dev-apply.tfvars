@@ -1,5 +1,5 @@
 environment="dev"
-
+region="us-east-1"
 
 # RDS
 db_instance_type="db.r5.large"

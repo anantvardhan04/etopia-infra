@@ -119,4 +119,11 @@ resource "aws_alb_listener_rule" "ext-alb-80" {
     type = "forward"
     target_group_arn = aws_alb_target_group.etopia-ext-alb-tg-80.arn
   }
+  condition {
+    host_header {
+      values = [
+        "*"
+      ]
+    }
+  }
 }

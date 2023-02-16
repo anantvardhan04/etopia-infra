@@ -27,7 +27,6 @@ resource "aws_security_group_rule" "etopia_bastion_sgr_2"{
 }
 
 resource "aws_instance" "etopia-bastion" {
-  name          = format("etopia-%s-bastion-instance",var.environment)
   ami           = "ami-0c55b159cbfafe1f0" 
   instance_type = "t2.micro"            
   key_name      = "etopia_dev_key"         

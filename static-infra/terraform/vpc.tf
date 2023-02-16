@@ -53,7 +53,6 @@ resource "aws_eip" "etopia_nat_eip" {
 }
 
 resource "aws_nat_gateway" "etopia_nat_gw" {
-  name = format("etopia-%s-nat-gw",var.environment)
   allocation_id = aws_eip.etopia_nat_eip.id
   subnet_id     = aws_subnet.etopia_public_subnet_2.id
 

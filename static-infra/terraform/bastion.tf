@@ -42,7 +42,6 @@ resource "aws_instance" "etopia-bastion" {
 }
 
 resource "aws_eip" "etopia-bastion-eip" {
-  name     = format("etopia-%s-bastion-eip",var.environment)
   instance = aws_instance.etopia-bastion.id
   vpc      = true
 

@@ -100,6 +100,7 @@ resource "aws_alb_target_group" "etopia-ext-alb-tg-80" {
   health_check {
     interval = 60
     port = "80"
+    path = "/health_check"
     healthy_threshold = 2
     unhealthy_threshold = 5
     timeout = 10

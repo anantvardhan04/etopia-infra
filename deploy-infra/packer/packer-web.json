@@ -15,7 +15,7 @@
         "vpc_id": "{{user `vpc-id`}}",
         "associate_public_ip_address": false,
         "subnet_id": "{{user `subnet-id`}}",
-        "source_ami": "ami-0e1dc7c0757fa9cdc",
+        "source_ami": "ami-0dfcb1ef8550277af",
         "instance_type": "t3.micro",
         "ssh_username": "ec2-user",
         "ami_name": "etopia-{{user `environment`}}-app-{{user `time`}}",

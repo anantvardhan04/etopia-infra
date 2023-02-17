@@ -1,0 +1,106 @@
+def ENVIRONMENTS = [
+    'DEV': [ env: 'dev' ]
+]
+
+pipeline {
+    agent none
+    options {
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        timestamps()
+    }
+    parameters {
+        choice(name: 'ENVIRONMENT', choices: allowed_environments, description: 'The environment.')
+    }
+    stages{
+        stage('Validate inputs and user') {
+            agent { label 'master' }
+            steps{
+                script{
+                    AWS_ENVIRONMENT=ENVIRONMENTS["${ENVIRONMENT}"]['env']
+                    withCredentials([usernamePassword(credentialsId: 'etopia-aws-dev', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                        env.AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+                        env.AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+                    }
+                }
+            }
+        }
+        stage('Checkout Application Code') {
+            agent { label 'master' }
+            steps{
+                script{
+                    checkout scm: [$class: 'GitSCM',
+                        branches: [[name: '*/master']],
+                        doGenerateSubmoduleConfigurations: false,
+                        extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'src']],
+                        submoduleCfg: [],
+                        userRemoteConfigs: [[credentialsId: 'etopia-global-github-clone-key	',
+                        url: 'etopia-global-github-clone-key	']]]
+                }
+            }
+        }
+        stage('Checkout Application Code') {
+            agent { label 'master' }
+            steps{
+                script{
+                    sh label: "Build app", script: "cp -r src/* packer/host-files/"
+                }
+            }
+        }
+        stage('Build Magento node packer') {
+            agent {
+                docker {
+                    image 'hashicorp/packer:1.7.6'
+                    args '--entrypoint=""'
+                }
+            }
+            steps {
+                 script {                
+                        dir('packer'){
+                            withCredentials([string(credentialsId: 'etopia-slackapp-jenkins-auth-token', variable: 'TOKEN')]){
+                                withCredentials([string(credentialsId: 'etopia-slackapp-bot-token', variable: 'BOT_TOKEN')]){
+                                    withCredentials([string(credentialsId: 'etopia-slackapp-signing-secret', variable: 'SIGNING_SECRET')]){
+                                        sh label: 'add tokens', script: "sed -i -e \"s/SLACK_BOT_TOKEN/${BOT_TOKEN}/g\" \
+                                                                    -e \"s/SLACK_SIGNING_SECRET/${SIGNING_SECRET}/g\" \
+                                                                    -e \"s/JENKINS_BOT_AUTH/${TOKEN}/g\" host-files/slackapp/app.py"
+                                        sh label: 'packer_build', script: 'packer build -var-file=params.json -machine-readable packer-web.json | tee build.log'
+                                        ami_id = sh label: 'packer_ami_id', returnStdout: true, script: 'grep \'artifact,0,id\' build.log | cut -d, -f6 | cut -d: -f2'
+                                        if (ami_id == null || ami_id ==""){
+                                              error 'Error running packer'
+                                          }
+                                        AMI_ID_FROM_PACKER= ami_id.trim()
+                                    }
+                                }
+                            }
+                        }
+                }
+           }
+        }
+        stage('Apply Terraform') {
+            agent {
+                docker {
+                    image "hashicorp/terraform:1.1.7"
+                    args '--entrypoint=""'
+                }
+            }
+            steps{
+                script{
+                    dir('terraform'){
+
+                        AWS_ACCOUNT_ID=ENVIRONMENTS["${ENVIRONMENT}"]['env']
+                        sh label: 'run_terraform_init', script: "terraform init --backend-config=\"../config/etopia-${AWS_ACCOUNT_ID}-init.tfvars\""
+                        sh label: 'run_terraform_plan', script: "terraform plan -var-file=\"../config/etopia-${AWS_ACCOUNT_ID}-apply.tfvars\" -var=\"app_ami_id=${AMI_ID_FROM_PACKER}\""
+                        sh label: 'run_terraform_apply', script: "terraform apply -auto-approve -var-file=\"../config/emea/${AWS_ACCOUNT_ID}-apply.tfvars\" -var=\"app_ami_id=${AMI_ID_FROM_PACKER}\""
+                    }
+                }
+            }
+        }
+    }
+    post{
+        cleanup{
+             node('master') {
+                sh 'rm -rf * .git/'
+            }
+        }
+    }
+}

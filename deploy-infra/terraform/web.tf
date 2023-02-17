@@ -1,4 +1,3 @@
-
 resource "aws_launch_configuration" "etopia-app-lc" {
   name_prefix = format("etopia-%s-lc", var.environment)
   image_id = var.app_ami_id

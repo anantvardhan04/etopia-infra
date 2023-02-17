@@ -11,7 +11,7 @@ resource "aws_security_group" "etopia_bastion_sg" {
 }
 
 resource "aws_security_group_rule" "etopia_bastion_sgr_1"{
-  type              = "ingress"
+  type        = "ingress"
   from_port   = 22
   to_port     = 22
   protocol    = "tcp"

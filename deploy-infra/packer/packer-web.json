@@ -34,7 +34,9 @@
         "run_tags": {
           "Name": "etopia-{{user `environment`}}-app-{{user `time`}}",
           "Application": "Etopia App",
-          "ResourceGroup": "Admin"
+          "ResourceGroup": "Admin",
+          "Environment": "Dev",
+          "Project": "Promotion Assessment"
         },
         "run_volume_tags": {
           "Name": "etopia-{{user `environment`}}-app-{{user `time`}}",

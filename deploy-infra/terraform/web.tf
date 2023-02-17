@@ -30,10 +30,11 @@ resource "aws_autoscaling_group" "etopia-autoscaling-group" {
   termination_policies = [
     "OldestLaunchConfiguration"]
   tags = {
-    Name = format("etopia-%s-autoscaling-group", var.environment)
+    Name = format("etopia-%s-autoscaling-group",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environment"]
+    Project = var.tags["project"]
   }
 }
 

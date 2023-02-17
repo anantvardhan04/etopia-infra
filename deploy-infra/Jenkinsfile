@@ -10,7 +10,7 @@ pipeline {
         timestamps()
     }
     parameters {
-        choice(name: 'ENVIRONMENT', choices: allowed_environments, description: 'The environment.')
+        choice(name: 'ENVIRONMENT', choices: ['DEV'], description: 'The environment.')
     }
     stages{
         stage('Validate inputs and user') {

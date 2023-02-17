@@ -90,7 +90,7 @@ pipeline {
                         AWS_ACCOUNT_ID=ENVIRONMENTS["${ENVIRONMENT}"]['env']
                         sh label: 'run_terraform_init', script: "terraform init --backend-config=\"../config/etopia-${AWS_ACCOUNT_ID}-init.tfvars\""
                         sh label: 'run_terraform_plan', script: "terraform plan -var-file=\"../config/etopia-${AWS_ACCOUNT_ID}-apply.tfvars\" -var=\"app_ami_id=${AMI_ID_FROM_PACKER}\""
-                        sh label: 'run_terraform_apply', script: "terraform apply -auto-approve -var-file=\"../config/emea/${AWS_ACCOUNT_ID}-apply.tfvars\" -var=\"app_ami_id=${AMI_ID_FROM_PACKER}\""
+                        sh label: 'run_terraform_apply', script: "terraform apply -auto-approve -var-file=\"../config/etopia-${AWS_ACCOUNT_ID}-apply.tfvars\" -var=\"app_ami_id=${AMI_ID_FROM_PACKER}\""
                     }
                 }
             }

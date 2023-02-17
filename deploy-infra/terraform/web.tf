@@ -31,7 +31,7 @@ resource "aws_autoscaling_group" "etopia-autoscaling-group" {
     "OldestLaunchConfiguration"]
   tag {
     key                 = "Name"
-    value               = format("etopia-%s-ext-lb", var.environment)
+    value               = format("etopia-%s-asg", var.environment)
     propagate_at_launch = true
   }
   tag {

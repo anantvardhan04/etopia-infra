@@ -9,3 +9,4 @@ variable "app_instances_count" {}
 variable "app_instance_max" {}
 variable "app_alb_target_group" {}
 variable "tags" {type = map}
+variable "region" {}

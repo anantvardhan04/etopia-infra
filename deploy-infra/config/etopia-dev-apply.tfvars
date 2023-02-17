@@ -1,3 +1,4 @@
+region="us-east-1"
 environment="dev"
 app_key_name="etopia_dev_key"
 app_instance_type="t2.micro"

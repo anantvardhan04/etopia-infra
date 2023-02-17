@@ -5,7 +5,8 @@ resource "aws_security_group" "etopia_bastion_sg" {
     Name = format("etopia-%s-bastion-sg",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environemnt"]
+    Project = var.tags["project"]
   }
 }
 
@@ -38,7 +39,8 @@ resource "aws_instance" "etopia-bastion" {
     Name = format("etopia-%s-bastion-instance",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environemnt"]
+    Project = var.tags["project"]
   }
 }
 
@@ -50,7 +52,8 @@ resource "aws_eip" "etopia-bastion-eip" {
     Name = format("etopia-%s-bastion-eip",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environemnt"]
+    Project = var.tags["project"]
   }
 }
 

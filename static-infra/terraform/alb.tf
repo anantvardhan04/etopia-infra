@@ -5,7 +5,8 @@ resource "aws_security_group" "etopia-ext-alb-sg" {
     Name = format("etopia-%s-ext-alb-sg", var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environemnt"]
+    Project = var.tags["project"]
   }
 }
 
@@ -56,7 +57,8 @@ resource "aws_alb" "etopia-ext-alb" {
     Name = format("etopia-%s-ext-lb", var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environemnt"]
+    Project = var.tags["project"]
   }
 }
 
@@ -108,7 +110,8 @@ resource "aws_alb_target_group" "etopia-ext-alb-tg-80" {
     Name = format("etopia-%s-e443", var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environemnt"]
+    Project = var.tags["project"]
   }
 }
 

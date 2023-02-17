@@ -60,7 +60,8 @@ resource "aws_nat_gateway" "etopia_nat_gw" {
     Name = format("etopia-%s-nat-gw",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environemnt"]
+    Project = var.tags["project"]
   }
 }
 
@@ -73,7 +74,8 @@ resource "aws_subnet" "etopia_private_subnet_1" {
     Name = format("etopia-%s-pvt-subnet-1",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environemnt"]
+    Project = var.tags["project"]
   }
   depends_on = [aws_nat_gateway.etopia_nat_gw]
 }
@@ -87,7 +89,8 @@ resource "aws_subnet" "etopia_private_subnet_2" {
     Name = format("etopia-%s-pvt-subnet-2",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environemnt"]
+    Project = var.tags["project"]
   }
   depends_on = [aws_nat_gateway.etopia_nat_gw]
 }

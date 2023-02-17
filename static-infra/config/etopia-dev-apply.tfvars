@@ -11,4 +11,6 @@ db_password="password123"
 tags = {
     owner = "Anant Vardhan"
     cost_center = "Etopia-Fonetwish"
+    environment = "Dev"
+    project = "Promotion Assessment"
 }

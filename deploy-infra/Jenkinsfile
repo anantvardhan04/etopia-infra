@@ -43,9 +43,7 @@ pipeline {
             agent { label 'master' }
             steps{
                 script{
-                    sh "pwd"
-                    sh "ls -lart"
-                    sh label: "Build app", script: "cp -r src/* packer/host-files/"
+                    sh label: "Build app", script: "cp -r src/* deploy-infra/packer/host-files/"
                 }
             }
         }

@@ -6,7 +6,7 @@ resource "aws_security_group" "etopia-packer-sg" {
     Name = format("etopia-%s-packer-sg", var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.tags["environemnt"]
+    Environment = var.tags["environment"]
     Project = var.tags["project"]
   }
 }

@@ -5,7 +5,7 @@ resource "aws_security_group" "etopia_bastion_sg" {
     Name = format("etopia-%s-bastion-sg",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.tags["environemnt"]
+    Environment = var.tags["environment"]
     Project = var.tags["project"]
   }
 }
@@ -29,9 +29,9 @@ resource "aws_security_group_rule" "etopia_bastion_sgr_2"{
 }
 
 resource "aws_instance" "etopia-bastion" {
-  ami           = "ami-0c55b159cbfafe1f0" 
+  ami           = "ami-0dfcb1ef8550277af" 
   instance_type = "t2.micro"            
-  key_name      = "etopia_dev_key"         
+  key_name      = "etopia-dev-key"         
   vpc_security_group_ids = [aws_security_group.etopia_bastion_sg.id]
   subnet_id     = aws_subnet.etopia_public_subnet_1.id
 
@@ -39,7 +39,7 @@ resource "aws_instance" "etopia-bastion" {
     Name = format("etopia-%s-bastion-instance",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.tags["environemnt"]
+    Environment = var.tags["environment"]
     Project = var.tags["project"]
   }
 }
@@ -52,7 +52,7 @@ resource "aws_eip" "etopia-bastion-eip" {
     Name = format("etopia-%s-bastion-eip",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.tags["environemnt"]
+    Environment = var.tags["environment"]
     Project = var.tags["project"]
   }
 }

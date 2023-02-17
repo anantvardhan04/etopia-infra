@@ -5,7 +5,8 @@ resource "aws_db_subnet_group" "etopia-rds-subnet-group" {
     Name = format("etopia-%s-rds-subnet-group",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environment"]
+    Project = var.tags["project"]
   }
 }
 
@@ -16,7 +17,8 @@ resource "aws_rds_cluster_parameter_group" "etopia-rds-cluster-param" {
     Name = format("etopia-%s-cluster-parm-group",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environment"]
+    Project = var.tags["project"]
   }
 }
 
@@ -27,7 +29,8 @@ resource "aws_db_parameter_group" "etopia-rds-cluster-instance-param" {
     Name = format("etopia-%s-instance-parm-group",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.environment
+    Environment = var.tags["environment"]
+    Project = var.tags["project"]
   }
 }
 
@@ -46,7 +49,7 @@ resource "aws_rds_cluster_instance" "etopia-rds-cluster-instance" {
     Name = format("etopia-%s-cluster-db",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.tags["environemnt"]
+    Environment = var.tags["environment"]
     Project = var.tags["project"]
   }
 }
@@ -68,7 +71,7 @@ resource "aws_rds_cluster" "etopia-rds-cluster" {
     Name = format("etopia-%s-cluster-db",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.tags["environemnt"]
+    Environment = var.tags["environment"]
     Project = var.tags["project"]
   }
 }
@@ -80,7 +83,7 @@ resource "aws_security_group" "etopia-rds-client-sg" {
     Name = format("etopia-%s-rds-client-sg",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.tags["environemnt"]
+    Environment = var.tags["environment"]
     Project = var.tags["project"]
   }
 }
@@ -103,7 +106,7 @@ resource "aws_security_group" "etopia-rds-server-sg" {
     Name = format("etopia-%s-rds-server-sg",var.environment)
     Owner = var.tags["owner"]
     CostCenter = var.tags["cost_center"]
-    Environment = var.tags["environemnt"]
+    Environment = var.tags["environment"]
     Project = var.tags["project"]
   }
 }

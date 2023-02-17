@@ -39,7 +39,7 @@ pipeline {
                 }
             }
         }
-        stage('Checkout Application Code') {
+        stage('Build') {
             agent { label 'master' }
             steps{
                 script{
@@ -47,7 +47,7 @@ pipeline {
                 }
             }
         }
-        stage('Build Magento node packer') {
+        stage('Build packer') {
             agent {
                 docker {
                     image 'hashicorp/packer:1.7.6'

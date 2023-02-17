@@ -53,30 +53,12 @@ resource "aws_alb" "etopia-ext-alb" {
   security_groups = [aws_security_group.etopia-ext-alb-sg.id]
   enable_cross_zone_load_balancing = true
   enable_deletion_protection = true
-  tag {
-    key                 = "Name"
-    value               = format("etopia-%s-ext-lb", var.environment)
-    propagate_at_launch = true
-  }
-  tag {
-    key                 = "Owner"
-    value               = var.tags["owner"]
-    propagate_at_launch = true
-  }
-  tag {
-    key                 = "CostCenter"
-    value               = var.tags["cost_center"]
-    propagate_at_launch = true
-  }
-  tag {
-    key                 = "Environment"
-    value               = var.tags["environment"]
-    propagate_at_launch = true
-  }
-  tag {
-    key                 = "Project"
-    value               = var.tags["project"]
-    propagate_at_launch = true
+  tags = {
+    Name = format("etopia-%s-ext-lb", var.environment)
+    Owner = var.tags["owner"]
+    CostCenter = var.tags["cost_center"]
+    Environment = var.tags["environment"]
+    Project = var.tags["project"]
   }
 }
 

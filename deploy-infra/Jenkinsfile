@@ -79,7 +79,7 @@ pipeline {
         stage('Apply Terraform') {
             agent {
                 docker {
-                    image "hashicorp/terraform:1.1.7"
+                    image "hashicorp/terraform:0.12.31"
                     args '--entrypoint=""'
                 }
             }

@@ -29,12 +29,30 @@ resource "aws_autoscaling_group" "etopia-autoscaling-group" {
   force_delete = true
   termination_policies = [
     "OldestLaunchConfiguration"]
-  tags = {
-    Name = format("etopia-%s-autoscaling-group",var.environment)
-    Owner = var.tags["owner"]
-    CostCenter = var.tags["cost_center"]
-    Environment = var.tags["environment"]
-    Project = var.tags["project"]
+  tag {
+    key                 = "Name"
+    value               = format("etopia-%s-ext-lb", var.environment)
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "Owner"
+    value               = var.tags["owner"]
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "CostCenter"
+    value               = var.tags["cost_center"]
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "Environment"
+    value               = var.tags["environment"]
+    propagate_at_launch = true
+  }
+  tag {
+    key                 = "Project"
+    value               = var.tags["project"]
+    propagate_at_launch = true
   }
 }
 

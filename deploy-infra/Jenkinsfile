@@ -56,7 +56,7 @@ pipeline {
             }
             steps {
                  script {                
-                        dir('packer'){
+                        dir('deploy-infra/packer'){
                             withCredentials([string(credentialsId: 'etopia-slackapp-jenkins-auth-token', variable: 'TOKEN')]){
                                 withCredentials([string(credentialsId: 'etopia-slackapp-bot-token', variable: 'BOT_TOKEN')]){
                                     withCredentials([string(credentialsId: 'etopia-slackapp-signing-secret', variable: 'SIGNING_SECRET')]){
@@ -85,7 +85,7 @@ pipeline {
             }
             steps{
                 script{
-                    dir('terraform'){
+                    dir('deploy-infra/terraform'){
 
                         AWS_ACCOUNT_ID=ENVIRONMENTS["${ENVIRONMENT}"]['env']
                         sh label: 'run_terraform_init', script: "terraform init --backend-config=\"../config/etopia-${AWS_ACCOUNT_ID}-init.tfvars\""

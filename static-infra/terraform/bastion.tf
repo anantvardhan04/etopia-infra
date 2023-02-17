@@ -1,4 +1,5 @@
 resource "aws_security_group" "etopia_bastion_sg" {
+  vpc_id = aws_vpc.etopia_vpc.id
   name = format("etopia-%s-bastion-sg",var.environment)
   tags = {
     Name = format("etopia-%s-bastion-sg",var.environment)

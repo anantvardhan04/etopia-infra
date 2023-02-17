@@ -122,7 +122,7 @@ resource "aws_alb_listener_rule" "ext-alb-80" {
   condition {
     host_header {
       values = [
-        "*"
+        "/slack/events"
       ]
     }
   }

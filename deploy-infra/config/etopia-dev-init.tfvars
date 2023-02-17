@@ -1,3 +1,3 @@
 bucket="etopia-terraform-infra-bucket"
-key="static-infra"
+key="deploy-infra"
 region="us-east-1"

@@ -1,5 +1,5 @@
 {
-    "packer-sg": "sg-0f22a134bc3597b83",
+    "packer-sg": "sg-0649cbae6696343ce",
     "vpc-id": "vpc-084472bbba2d18f36",
     "subnet-id": "subnet-009be3ceac1e97351",
     "environment": "dev"

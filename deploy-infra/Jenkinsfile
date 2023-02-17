@@ -35,7 +35,7 @@ pipeline {
                         extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'src']],
                         submoduleCfg: [],
                         userRemoteConfigs: [[credentialsId: 'etopia-global-github-clone-key	',
-                        url: 'etopia-global-github-clone-key	']]]
+                        url: 'https://github.com/anantvardhan04/etopia-application.git']]]
                 }
             }
         }

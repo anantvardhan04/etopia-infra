@@ -58,8 +58,6 @@ pipeline {
                     dir('static-infra/terraform'){
                             sh label: 'configure_terraform', script: "terraform init -backend-config=\"../config/etopia-${AWS_ENVIRONMENT}-init.tfvars\" --reconfigure --upgrade"
                             sh label: 'run_terraform_plan', script: "terraform plan -var-file=\"../config/etopia-${AWS_ENVIRONMENT}-apply.tfvars\" -no-color -out tfplan | tee tfplan_state"
-                            sh "pwd"
-                            sh "ls"
                             PLAN_STATUS = sh label: 'plan_status', returnStdout: true, script: 'cat tfplan_state | grep "Plan:\\|No changes"'
                             echo "Plan status: ${PLAN_STATUS}"
                             sh "terraform show -json tfplan >  tfplan.json"

@@ -30,7 +30,7 @@ resource "aws_security_group_rule" "etopia-sg-bastion-rule" {
   description = "Allow traffic on port 22 from Bastion security group"
 }
 
-resource "aws_security_group_rule" "etopia-sg-ext-eg" {
+resource "aws_security_group_rule" "etopia-app-sg-ext-eg" {
   type = "egress"
   from_port = 0
   to_port = 0

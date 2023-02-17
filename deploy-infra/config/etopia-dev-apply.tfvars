@@ -1,6 +1,6 @@
 region="us-east-1"
 environment="dev"
-app_key_name="etopia_dev_key"
+app_key_name="etopia-dev-key	"
 app_instance_type="t2.micro"
 rds_db_client_sg="sg-0b7a257df310fb4a2"
 app_sg="sg-005d3d5aa791017fb"

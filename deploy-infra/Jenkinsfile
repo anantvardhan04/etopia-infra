@@ -106,7 +106,7 @@ pipeline {
             }
             steps {
                 script {
-                    def props = readProperties  file: "../config/etopia-${AWS_ENVIRONMENT}.tfvars"
+                    def props = readProperties  file: "../config/etopia-${AWS_ENVIRONMENT}-apply.tfvars"
                     aws_instance_ids = sh label: 'Getting Instance IPs', returnStdout: true, script: "aws --region \"${props.region}\" autoscaling describe-auto-scaling-groups --auto-scaling-group-names \"etopia-${props.environment}-asg\" --query \'AutoScalingGroups[].Instances[?LifecycleState==`InService` && HealthStatus==`Healthy`].InstanceId[]\' --output text"
                     for (aws_instance_id in aws_instance_ids.split('\t')) {
                         echo "Detach instance ${aws_instance_id} to force instance replacement"

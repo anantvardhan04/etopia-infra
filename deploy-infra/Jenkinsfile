@@ -51,6 +51,7 @@ pipeline {
         stage('Build packer') {
             agent {
                 docker {
+                    label 'fonetwish-slave'
                     image 'hashicorp/packer:1.7.6'
                     args '--entrypoint=""'
                 }
@@ -83,6 +84,7 @@ pipeline {
         stage('Apply Terraform') {
             agent {
                 docker {
+                    label 'fonetwish-slave'
                     image "hashicorp/terraform:0.12.31"
                     args '--entrypoint=""'
                 }
@@ -101,6 +103,7 @@ pipeline {
         stage('Update instances') {
             agent {
                 docker {
+                    label 'fonetwish-slave'
                     image "amazon/aws-cli:2.10.1"
                     args '--entrypoint=""'
                 }
@@ -136,6 +139,9 @@ pipeline {
     post{
         cleanup{
              node('master') {
+                sh 'rm -rf * .git/'
+            }
+            node('fonetwish-slave') {
                 sh 'rm -rf * .git/'
             }
         }

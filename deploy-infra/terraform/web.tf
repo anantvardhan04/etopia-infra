@@ -72,3 +72,34 @@ resource "aws_autoscaling_policy" "etopia-autoscaling-policy-down" {
   cooldown = 300
   autoscaling_group_name = aws_autoscaling_group.etopia-autoscaling-group.name
 }
+
+// Alarms
+resource "aws_cloudwatch_metric_alarm" "etopia-autoscaling-high-cpu-alarm" {
+  alarm_name = format("etopia-%s-autoscaling-high-cpu-alarm",var.environment)
+  namespace = "AWS/EC2"
+  metric_name = "CPUUtilization"
+  statistic = "Average"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  period = "60"
+  evaluation_periods = "5"
+  threshold = "70"
+  alarm_actions = [aws_autoscaling_policy.etopia-autoscaling-policy-up.arn]
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.etopia-autoscaling-group.name
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "etopia-autoscaling-low-cpu-alarm" {
+  alarm_name = format("etopia-%s-autoscaling-low-cpu-alarm",var.environment)
+  namespace = "AWS/EC2"
+  metric_name = "CPUUtilization"
+  statistic = "Average"
+  comparison_operator = "LessThanThreshold"
+  period = "60"
+  evaluation_periods = "5"
+  threshold = "30"
+  alarm_actions = [aws_autoscaling_policy.etopia-autoscaling-policy-down.arn]
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.etopia-autoscaling-group.name
+  }
+}

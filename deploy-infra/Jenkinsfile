@@ -10,7 +10,7 @@ pipeline {
         timestamps()
     }
     parameters {
-        string(name: 'BRANCH', description: 'Select the branch to deploy', default: 'master')
+        string(name: 'BRANCH', description: 'Select the branch to deploy', defaultValue: 'master')
         choice(name: 'ENVIRONMENT', choices: ['DEV'], description: 'The environment.')
     }
     stages{
@@ -131,6 +131,7 @@ pipeline {
             }
         }
     }
+}
     post{
         cleanup{
              node('master') {
@@ -138,5 +139,4 @@ pipeline {
             }
         }
     }
-  } 
 }

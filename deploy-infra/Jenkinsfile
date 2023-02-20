@@ -75,9 +75,10 @@ pipeline {
                                     }
                                 }
                             }
-                        }
-                }
-           }
+                         }
+                 }
+            }
+         }
         }
         stage('Apply Terraform') {
             agent {
@@ -131,7 +132,6 @@ pipeline {
             }
         }
     }
-}
     post{
         cleanup{
              node('master') {

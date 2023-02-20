@@ -10,6 +10,7 @@ pipeline {
         timestamps()
     }
     parameters {
+        string(name: 'BRANCH', description: 'Select the branch to deploy', default: 'master')
         choice(name: 'ENVIRONMENT', choices: ['DEV'], description: 'The environment.')
     }
     stages{
@@ -30,7 +31,7 @@ pipeline {
             steps{
                 script{
                     checkout scm: [$class: 'GitSCM',
-                        branches: [[name: '*/master']],
+                        branches: [[name: '*/${BRANCH}']],
                         doGenerateSubmoduleConfigurations: false,
                         extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'src']],
                         submoduleCfg: [],

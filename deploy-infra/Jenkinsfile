@@ -15,7 +15,7 @@ pipeline {
     }
     stages{
         stage('Validate inputs and user') {
-            agent { label 'master' }
+            agent { label 'fonetwish-slave' }
             steps{
                 script{
                     AWS_ENVIRONMENT=ENVIRONMENTS["${ENVIRONMENT}"]['env']
@@ -27,7 +27,7 @@ pipeline {
             }
         }
         stage('Checkout Application Code') {
-            agent { label 'master' }
+            agent { label 'fonetwish-slave' }
             steps{
                 script{
                     checkout scm: [$class: 'GitSCM',
@@ -41,7 +41,7 @@ pipeline {
             }
         }
         stage('Build') {
-            agent { label 'master' }
+            agent { label 'fonetwish-slave' }
             steps{
                 script{
                     sh label: "Build app", script: "cp -r src/* deploy-infra/packer/host-files/slackapp"

@@ -18,7 +18,7 @@ pipeline {
             agent { label 'master' }
             steps{
                 script{
-                    env.AWS_ENVIRONMENT=ENVIRONMENTS["${ENVIRONMENT}"]['env']
+                    AWS_ENVIRONMENT=ENVIRONMENTS["${ENVIRONMENT}"]['env']
                     withCredentials([usernamePassword(credentialsId: 'etopia-aws-dev', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                         env.AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
                         env.AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
@@ -90,9 +90,10 @@ pipeline {
             steps{
                 script{
                     dir('deploy-infra/terraform'){
-                        sh label: 'run_terraform_init', script: "terraform init --backend-config=\"../config/etopia-${AWS_ENVIRONMENT}-init.tfvars\""
-                        sh label: 'run_terraform_plan', script: "terraform plan -var-file=\"../config/etopia-${AWS_ENVIRONMENT}-apply.tfvars\" -var=\"app_ami_id=${AMI_ID_FROM_PACKER}\""
-                        sh label: 'run_terraform_apply', script: "terraform apply -auto-approve -var-file=\"../config/etopia-${AWS_ENVIRONMENT}-apply.tfvars\" -var=\"app_ami_id=${AMI_ID_FROM_PACKER}\""
+                        AWS_ACCOUNT_ID=ENVIRONMENTS["${ENVIRONMENT}"]['env']
+                        sh label: 'run_terraform_init', script: "terraform init --backend-config=\"../config/etopia-${AWS_ACCOUNT_ID}-init.tfvars\""
+                        sh label: 'run_terraform_plan', script: "terraform plan -var-file=\"../config/etopia-${AWS_ACCOUNT_ID}-apply.tfvars\" -var=\"app_ami_id=${AMI_ID_FROM_PACKER}\""
+                        sh label: 'run_terraform_apply', script: "terraform apply -auto-approve -var-file=\"../config/etopia-${AWS_ACCOUNT_ID}-apply.tfvars\" -var=\"app_ami_id=${AMI_ID_FROM_PACKER}\""
                     }
                 }
             }
@@ -106,20 +107,20 @@ pipeline {
             }
             steps {
                 script {
-                 dir('deploy-infra') {
-                    def props = readProperties  file: "config/etopia-${AWS_ENVIRONMENT}-apply.tfvars"
-                    aws_instance_ids = sh label: 'Getting Instance IPs', returnStdout: true, script: "aws --region \"${props.region}\" autoscaling describe-auto-scaling-groups --auto-scaling-group-names \"etopia-${props.environment}-asg\" --query \'AutoScalingGroups[].Instances[?LifecycleState==`InService` && HealthStatus==`Healthy`].InstanceId[]\' --output text"
+                    AWS_ACCOUNT_ID=ENVIRONMENTS["${ENVIRONMENT}"]['env']
+                    def props = readProperties  file: "deploy-infra/config/etopia-${AWS_ACCOUNT_ID}-apply.tfvars"
+                    aws_instance_ids = sh label: 'Getting Instance IPs', returnStdout: true, script: "aws --region \"${props.region}\" autoscaling describe-auto-scaling-groups --auto-scaling-group-names \"etopia-${AWS_ACCOUNT_ID}-asg\" --query \'AutoScalingGroups[].Instances[?LifecycleState==`InService` && HealthStatus==`Healthy`].InstanceId[]\' --output text"
                     for (aws_instance_id in aws_instance_ids.split('\t')) {
                         echo "Detach instance ${aws_instance_id} to force instance replacement"
-                        sh label: '', script: "aws --region \"${props.region}\" autoscaling detach-instances --auto-scaling-group-name \"etopia-${props.environment}-asg\" --no-should-decrement-desired-capacity --instance-ids " + aws_instance_id
+                        sh label: '', script: "aws --region \"${props.region}\" autoscaling detach-instances --auto-scaling-group-name \"etopia-${AWS_ACCOUNT_ID}-asg\" --no-should-decrement-desired-capacity --instance-ids " + aws_instance_id
                     }
                     timeout(5) {
-                        desired_count = sh label: '', returnStdout: true, script: "aws --region \"${props.region}\" autoscaling describe-auto-scaling-groups --auto-scaling-group-name \"etopia-${props.environment}-asg\" --query 'AutoScalingGroups[].DesiredCapacity' --output text"
+                        desired_count = sh label: '', returnStdout: true, script: "aws --region \"${props.region}\" autoscaling describe-auto-scaling-groups --auto-scaling-group-name \"etopia-${AWS_ACCOUNT_ID}-asg\" --query 'AutoScalingGroups[].DesiredCapacity' --output text"
                         echo "Wait autoscaling to have desired instances: ${desired_count}"
                         def execution=true
                         while (execution) {
                             echo "Autoscaling not ready"
-                            active_instances = sh label: '', returnStdout: true, script: "aws --region \"${props.region}\" autoscaling describe-auto-scaling-groups --auto-scaling-group-name \"etopia-${props.environment}-asg\" --query 'AutoScalingGroups[].Instances[?LifecycleState==`InService` && HealthStatus==`Healthy`]' --output text | wc -l"
+                            active_instances = sh label: '', returnStdout: true, script: "aws --region \"${props.region}\" autoscaling describe-auto-scaling-groups --auto-scaling-group-name \"etopia-${AWS_ACCOUNT_ID}-asg\" --query 'AutoScalingGroups[].Instances[?LifecycleState==`InService` && HealthStatus==`Healthy`]' --output text | wc -l"
                                 execution = ! active_instances.trim().equals(desired_count.trim())
                                 sleep 15
                         }
@@ -128,7 +129,6 @@ pipeline {
                          sh label: '', script: "aws --region \"${props.region}\" ec2 terminate-instances --instance-ids " + aws_instance_id
                         }
                     }
-                  }
                 }
             }
         }

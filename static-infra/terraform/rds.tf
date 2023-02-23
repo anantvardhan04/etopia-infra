@@ -61,6 +61,7 @@ resource "aws_rds_cluster" "etopia-rds-cluster" {
   master_password = var.db_password
   engine = "aurora-mysql"
   engine_version = "5.7.mysql_aurora.2.10.2"
+  snapshot_identifier =  var.dr_scenario ? var.db_snapshot : null
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.etopia-rds-cluster-param.name
   port = 3306
   db_subnet_group_name = aws_db_subnet_group.etopia-rds-subnet-group.name

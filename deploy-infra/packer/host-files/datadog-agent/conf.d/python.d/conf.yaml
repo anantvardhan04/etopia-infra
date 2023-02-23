@@ -6,6 +6,6 @@ instances:
 logs:
 
   - type: file
-    path: /var/log/slackapp/system.log
+    path: /var/log/slackapp/app.log
     service: slackapp
     source: python

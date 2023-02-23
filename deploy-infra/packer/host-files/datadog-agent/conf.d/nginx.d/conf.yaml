@@ -1,0 +1,13 @@
+init_config:
+
+instances:
+
+logs:
+  - type: file
+    path: /var/log/nginx/access.log
+    source: nginx
+    service: nginx
+  - type: file
+    path: /var/log/nginx/error.log
+    source: nginx
+    service: nginx

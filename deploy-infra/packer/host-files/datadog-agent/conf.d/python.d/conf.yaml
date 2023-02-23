@@ -1,0 +1,11 @@
+init_config:
+
+instances:
+
+##Log section
+logs:
+
+  - type: file
+    path: /var/log/slackapp/system.log
+    service: slackapp
+    source: python

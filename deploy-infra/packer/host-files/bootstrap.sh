@@ -19,10 +19,13 @@ sudo sed -i "s/# tags:.*/tags: \n  - app: fonetwish/" /etc/datadog-agent/datadog
 sudo sed -i "s/# env: <environment name>/env: dev/" /etc/datadog-agent/datadog.yaml
 
 
+# Creating logging directory for slackapp
+sudo mkdir -p /var/log/slackapp
+
 # Create Slackapp webhook service
 sudo python3 -m venv /opt/slackapp/webhook
 sudo /opt/slackapp/webhook/bin/pip install --upgrade pip
 sudo cp /tmp/host-files/slackapp/app.py /tmp/host-files/slackapp/requirements.txt /opt/slackapp/webhook/
 sudo cp /tmp/host-files/slackapp/app.service /usr/lib/systemd/system/slackapp.service
-pip3 install --user -r /opt/slackapp/webhook/requirements.txt
+sudo pip3 install --user -r /opt/slackapp/webhook/requirements.txt
 sudo systemctl enable slackapp.service && sudo systemctl start slackapp.service
